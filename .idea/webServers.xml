@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="5ef2f893-881b-448a-a58c-306c65cf34bf" name="work-time" url="http://188.166.161.119">
+        <fileTransfer host="188.166.161.119" port="22" rootFolder="/mnt/volume-fra1-01/repo/dev/iar/webpack-test/public_html" accessType="SFTP">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" />
+          </advancedOptions>
+          <option name="port" value="22" />
+        </fileTransfer>
+      </webServer>
+      <webServer id="f3b6c0b7-2b24-4e22-8bab-4cabce8a4a82" name="nirvanna-work-time" url="http://31.186.98.67">
+        <fileTransfer explicitFtps="false" host="31.186.98.67" port="22" privateKey="C:\Users\Ser1\.ssh\id_rsa" rootFolder="/var/www/html/apps/work-time/" accessType="SFTP" keyPair="true">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" />
+          </advancedOptions>
+          <option name="port" value="22" />
+        </fileTransfer>
+      </webServer>
+    </option>
+  </component>
+</project>
