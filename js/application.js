@@ -41,17 +41,23 @@ const app = new Vue({
     },
 	methods: {
     	getUser: function () {
-            BX24.selectUsers((res) => {
-                this.isLoading = true;
-                this.users = [];
-                this.usersId = [];
-                this.result = {};
-            	for (let user of res) {
-            	    this.usersId.push(user.id);
-            	    this.users.push(user);
-                }
-                this.getTasks();
-			})
+    	    console.log(this.dateStartString);
+    	    console.log(this.dateEndString);
+    	    if (this.dateStartString === '' || this.dateEndString ==='') {
+                alert('Пожалуйста, выберите период');
+            } else {
+                BX24.selectUsers((res) => {
+                    this.isLoading = true;
+                    this.users = [];
+                    this.usersId = [];
+                    this.result = {};
+                    for (let user of res) {
+                        this.usersId.push(user.id);
+                        this.users.push(user);
+                    }
+                    this.getTasks();
+                })
+            }
         },
         getTasks: function () {//Получить все задачи выбранных пользователей
                 let commands = [];
@@ -99,7 +105,7 @@ const app = new Vue({
                 },
             }
         },
-        getTimeCommand: function(taskId) {
+        getTimeCommand: function(taskId, userId) {
     	    /*let isDate = false;
 
     	    if (this.dateStartString !== '' && this.dateEndString === '') {
@@ -117,7 +123,9 @@ const app = new Vue({
                     params: [
                         taskId,
                         {'ID': 'asc'},
-                        {}
+                        {
+                            'USER_ID': userId
+                        }
                     ]
                 },
             }
@@ -126,7 +134,7 @@ const app = new Vue({
             this.timeBatchCommands = [];
 
     	    this.tasks.forEach((elem) => {
-                this.timeBatchCommands.push(this.getTimeCommand(elem.ID));
+                this.timeBatchCommands.push(this.getTimeCommand(elem.ID, elem.RESPONSIBLE_ID));
             });
 
     	    this.batchPacks();
@@ -208,8 +216,6 @@ const app = new Vue({
                     }
                 }
             }
-            console.log(secondsInTask);
-            console.log(periodSecondsInTask);
 
             let tasks = [];
 
@@ -237,7 +243,6 @@ const app = new Vue({
             let tasksCount = 0;
             for (let task of this.tasks) {
                 Vue.set(this.result[task.RESPONSIBLE_ID].tasks, task.ID, task);
-                Vue.set(this.result[task.RESPONSIBLE_ID].tasks[task.ID], 'times', []);
                 tasksCount++;
                 Vue.set(this.result[task.RESPONSIBLE_ID], 'taskCount', tasksCount);
             }

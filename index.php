@@ -45,7 +45,9 @@
                     <img v-bind:src="item.photo" class="user-img">
                 </div>
                 <div class="user-name">
-                    {{item.name}}
+                    <a v-bind:href="'https://nir-vanna.bitrix24.ru/company/personal/user/' + item.id + '/'">
+                        {{item.name}}
+                    </a>
                 </div>
             </div>
             <table class="list" v-if="item.taskCount">
