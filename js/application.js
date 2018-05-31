@@ -23,6 +23,9 @@ const app = new Vue({
             return this.$store.state.data
         }
     },
+    mounted: function () {
+        this.getOnLoad();
+    },
     updated: function () {
         BX24.fitWindow();
     },
@@ -40,26 +43,54 @@ const app = new Vue({
         isLoading: false
     },
 	methods: {
-    	getUser: function () {
-    	    console.log(this.dateStartString);
-    	    console.log(this.dateEndString);
-    	    if (this.dateStartString === '' || this.dateEndString ==='') {
+        getOnLoad: function () {
+            setTimeout(() => {
+                let dateStart = BX24.userOption.get('startDate');
+                let dateEnd = BX24.userOption.get('dateEnd');
+                let usersId = BX24.userOption.get('users');
+                console.log(dateStart);
+                console.log(dateEnd);
+                console.log(usersId);
+                if (dateStart !== undefined && dateEnd !== undefined && usersId !== undefined) {
+                    this.dateStartString = dateStart;
+                    this.dateEndString = dateEnd;
+                    this.users = JSON.parse(usersId);
+                    for (let user of this.users) {
+                        this.usersId.push(user.id);
+                    }
+                    this.isLoading = true;
+                    this.getTasks();
+                }
+            }, 500);
+        },
+        getTime: function () {
+            this.result = {};
+
+            if ((this.dateStartString === '' || this.dateEndString ==='')) {
                 alert('Пожалуйста, выберите период');
             } else {
-                BX24.selectUsers((res) => {
-                    this.isLoading = true;
-                    this.users = [];
-                    this.usersId = [];
-                    this.result = {};
-                    for (let user of res) {
-                        this.usersId.push(user.id);
-                        this.users.push(user);
-                    }
-                    this.getTasks();
-                })
+                BX24.userOption.set('startDate', this.dateStartString);
+                BX24.userOption.set('dateEnd', this.dateEndString);
+                this.getUser();
             }
         },
+        getUser: function () {
+            BX24.selectUsers((res) => {
+                this.isLoading = true;
+                this.users = [];
+                this.usersId = [];
+                for (let user of res) {
+                    this.usersId.push(user.id);
+                    this.users.push(user);
+                }
+                BX24.userOption.set('users', JSON.stringify(this.users));
+                this.getTasks();
+            })
+        },
         getTasks: function () {//Получить все задачи выбранных пользователей
+            BX24.userOption.set('startDate', this.dateStartString);
+            BX24.userOption.set('dateEnd', this.dateEndString);
+            this.isLoading = true;
                 let commands = [];
 
     	    if (this.usersId.length) {
@@ -106,17 +137,6 @@ const app = new Vue({
             }
         },
         getTimeCommand: function(taskId, userId) {
-    	    /*let isDate = false;
-
-    	    if (this.dateStartString !== '' && this.dateEndString === '') {
-                this.dateStart = new Date(this.dateStartString);
-                this.dateEnd = new Date();
-                isDate = true;
-            } else if (this.dateStartString !== '' && this.dateEndString !== '') {
-                this.dateStart = new Date(this.dateStartString);
-                this.dateEnd = new Date(this.dateEndString);
-                isDate = true;
-            }*/
             return {
                 ['time_' + taskId]: {
                     method: 'task.elapseditem.getlist',
@@ -171,7 +191,10 @@ const app = new Vue({
             startDate.setHours(0, 0, 0);
             let endDate = new Date(this.dateEndString);
             endDate.setHours(0, 0, 0);
+            endDate.setDate(endDate.getDate() + 1)
 
+            console.log(startDate);
+            console.log(endDate);
     	    for (let time of this.taskTimes) {
     	        let periodSeconds = 0;
     	        let DATE_START = new Date(time.DATE_START);

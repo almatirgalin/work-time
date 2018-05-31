@@ -33,8 +33,11 @@
             </div>
         </div>
         <div class="filter-block-user">
-            <div class="user-button" v-on:click="getUser">
-                Выбрать сотрудника
+            <div class="user-button" v-on:click="getTime">
+                Выбрать сотрудников
+            </div>
+            <div class="user-button" v-if="(users.length && dateStartString != '' && dateEndString != '')" v-on:click="getTasks">
+                Сформировать
             </div>
         </div>
     </div>
@@ -50,7 +53,7 @@
                     </a>
                 </div>
             </div>
-            <table class="list" v-if="item.taskCount">
+            <table class="list" v-if="(item.taskCount && item.TASK_PERIOD_SECONDS)">
                 <thead>
                 <tr>
                     <th>ID задачи</th>
@@ -65,7 +68,7 @@
                     <td><a v-bind:href="'https://nir-vanna.bitrix24.ru/company/personal/user/' + item.id + '/tasks/task/view/' + index + '/'">{{index}}</a></td>
                     <td>{{formatDate(task.CREATED_DATE)}}</td>
                     <td class="left-align">{{task.TITLE}}</td>
-                    <td>{{secondsToHours(task.PERIOD_SECONDS)}}</td>
+                    <td>{{(task.PERIOD_SECONDS)}}</td>
                     <td>{{secondsToHours(task.ALL_SECONDS)}}</td>
                 </tr>
                 <tr>
@@ -75,7 +78,7 @@
                 </tr>
                 </tbody>
             </table>
-            <div class="no-items" v-if="!item.taskCount">
+            <div class="no-items" v-else>
                 Не найдено задач с затреченным временем за этот период
             </div>
         </div>
