@@ -68,7 +68,7 @@
                     <td><a v-bind:href="'https://nir-vanna.bitrix24.ru/company/personal/user/' + item.id + '/tasks/task/view/' + index + '/'">{{index}}</a></td>
                     <td>{{formatDate(task.CREATED_DATE)}}</td>
                     <td class="left-align">{{task.TITLE}}</td>
-                    <td>{{(task.PERIOD_SECONDS)}}</td>
+                    <td>{{secondsToHours(task.PERIOD_SECONDS)}}</td>
                     <td>{{secondsToHours(task.ALL_SECONDS)}}</td>
                 </tr>
                 <tr>

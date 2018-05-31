@@ -48,9 +48,7 @@ const app = new Vue({
                 let dateStart = BX24.userOption.get('startDate');
                 let dateEnd = BX24.userOption.get('dateEnd');
                 let usersId = BX24.userOption.get('users');
-                console.log(dateStart);
-                console.log(dateEnd);
-                console.log(usersId);
+
                 if (dateStart !== undefined && dateEnd !== undefined && usersId !== undefined) {
                     this.dateStartString = dateStart;
                     this.dateEndString = dateEnd;
@@ -191,19 +189,18 @@ const app = new Vue({
             startDate.setHours(0, 0, 0);
             let endDate = new Date(this.dateEndString);
             endDate.setHours(0, 0, 0);
-            endDate.setDate(endDate.getDate() + 1)
+            endDate.setDate(endDate.getDate() + 1);
 
-            console.log(startDate);
-            console.log(endDate);
     	    for (let time of this.taskTimes) {
     	        let periodSeconds = 0;
     	        let DATE_START = new Date(time.DATE_START);
     	        let DATE_STOP = new Date(time.DATE_STOP);
 
-    	        if (DATE_START > startDate && DATE_STOP < endDate) {//Внутри периода
+    	        //if (DATE_START > startDate && DATE_STOP < endDate) {//Внутри периода
+    	        if (DATE_STOP > startDate && DATE_STOP < endDate) {//Внутри периода
     	            //console.log('in period');
                     periodSeconds = time.SECONDS;
-                } else if (DATE_START < startDate && (DATE_STOP < endDate && DATE_STOP > startDate)) {//Дата начала раньше даты начала периода
+                } /*else if (DATE_START < startDate && (DATE_STOP < endDate && DATE_STOP > startDate)) {//Дата начала раньше даты начала периода
                     //console.log('before period');
                     let timeDiff = Math.abs(startDate.getTime() - DATE_START.getTime());
                     let diffSeconds = Math.ceil(timeDiff / 1000);
@@ -213,7 +210,7 @@ const app = new Vue({
                     let timeDiff = Math.abs(DATE_STOP.getTime() - endDate.getTime());
                     let diffSeconds = Math.ceil(timeDiff / 1000);
                     periodSeconds = time.SECONDS - diffSeconds;
-                }
+                } */
 
                 time.PERIOD_SECONDS = periodSeconds;
             }
