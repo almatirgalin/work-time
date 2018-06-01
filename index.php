@@ -3,7 +3,7 @@
 <head>
 	<title>Приложение Учет рабочего времени</title>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-	<link href="css/style.css" type="text/css" rel="stylesheet" />
+	<link href="css/style.css?ver=1" type="text/css" rel="stylesheet" />
 </head>
 <body>
 
@@ -95,10 +95,10 @@
 </div>
 
 <script type="text/javascript" src="js/bxapi.js"></script>
-<script type="text/javascript" src="js/restCall.js"></script>
+<script type="text/javascript" src="js/restCall.js?ver=1"></script>
 <script type="text/javascript" src="js/vuex.js"></script>
 <script type="text/javascript" src="js/vue.js"></script>
-<script type="text/javascript" src="js/application.js"></script>
+<script type="text/javascript" src="js/application.js?ver=1.1"></script>
 </body>
 </html>
 

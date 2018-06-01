@@ -193,11 +193,11 @@ const app = new Vue({
 
     	    for (let time of this.taskTimes) {
     	        let periodSeconds = 0;
-    	        let DATE_START = new Date(time.DATE_START);
-    	        let DATE_STOP = new Date(time.DATE_STOP);
+    	        let DATE_START = new Date(time.CREATED_DATE);
+    	        //let DATE_STOP = new Date(time.DATE_STOP);
 
     	        //if (DATE_START > startDate && DATE_STOP < endDate) {//Внутри периода
-    	        if (DATE_STOP > startDate && DATE_STOP < endDate) {//Внутри периода
+    	        if (DATE_START > startDate && DATE_START < endDate) {//Внутри периода
     	            //console.log('in period');
                     periodSeconds = time.SECONDS;
                 } /*else if (DATE_START < startDate && (DATE_STOP < endDate && DATE_STOP > startDate)) {//Дата начала раньше даты начала периода
