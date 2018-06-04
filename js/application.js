@@ -33,7 +33,7 @@ const app = new Vue({
         result: {},
         users: [],
         usersId: [],
-        tasks: [],
+        tasks: {},
         taskTimes: [],
         timeBatchCommands: [],
         dateStart: '',
@@ -100,8 +100,21 @@ const app = new Vue({
     	    call.batch( //Запрос
                 commands,
                 (data) => {
-                    this.tasks = data.tasks.data;
-                    if (this.tasks.length) {
+                    let tasks = data.tasks.data;
+                    let tasksCreated = data.tasksCreated.data;
+
+                    if (tasks.length) {
+                        tasks.forEach((item) => {
+                            this.tasks[item.ID] = item;
+                        });
+
+                        if (tasksCreated.length) {
+                            tasksCreated.forEach((item) => {
+                                if (!this.tasks.hasOwnProperty(item.ID)) {
+                                    this.tasks[item.ID] = item;
+                                }
+                            });
+                        }
                         this.buildCommandsArray();
                     }
                     //store.commit('setData', data);
@@ -119,7 +132,25 @@ const app = new Vue({
                     params: {
                         order: {'CREATED_DATE': 'asc'},
                         filter: {
-                            'RESPONSIBLE_ID': this.usersId
+                            'RESPONSIBLE_ID': this.usersId,
+                        },
+                        params : [],
+                        select: [
+                            'TITLE',
+                            'CREATED_DATE',
+                            'DEADLINE',
+                            'STATUS',
+                            'CREATED_BY',
+                            'RESPONSIBLE_ID'
+                        ]
+                    }
+                },
+                'tasksCreated': {
+                    method: 'task.item.list',
+                    params: {
+                        order: {'CREATED_DATE': 'asc'},
+                        filter: {
+                            'CREATED_BY': this.usersId,
                         },
                         params : [],
                         select: [
@@ -151,9 +182,15 @@ const app = new Vue({
         buildCommandsArray: function () {
             this.timeBatchCommands = [];
 
-    	    this.tasks.forEach((elem) => {
-                this.timeBatchCommands.push(this.getTimeCommand(elem.ID, elem.RESPONSIBLE_ID));
-            });
+            for (let id in this.tasks) {
+                if (this.tasks.hasOwnProperty(id)) {
+                    if (~this.usersId.indexOf(this.tasks[id].RESPONSIBLE_ID)) {
+                        this.timeBatchCommands.push(this.getTimeCommand(id, this.tasks[id].RESPONSIBLE_ID));
+                    } else {
+                        this.timeBatchCommands.push(this.getTimeCommand(id, this.tasks[id].CREATED_BY));
+                    }
+                }
+            }
 
     	    this.batchPacks();
         },
@@ -261,10 +298,20 @@ const app = new Vue({
             }
 
             let tasksCount = 0;
-            for (let task of this.tasks) {
-                Vue.set(this.result[task.RESPONSIBLE_ID].tasks, task.ID, task);
-                tasksCount++;
-                Vue.set(this.result[task.RESPONSIBLE_ID], 'taskCount', tasksCount);
+            for (let id in this.tasks) {
+                if (this.tasks.hasOwnProperty(id)) {
+                    if (~this.usersId.indexOf(this.tasks[id].RESPONSIBLE_ID)) {
+                        Vue.set(this.result[this.tasks[id].RESPONSIBLE_ID].tasks, this.tasks[id].ID, this.tasks[id]);
+                        Vue.set(this.result[this.tasks[id].RESPONSIBLE_ID], 'taskCount', tasksCount);
+                    } else if (~this.usersId.indexOf(this.tasks[id].CREATED_BY)) {
+                        Vue.set(this.result[this.tasks[id].CREATED_BY].tasks, this.tasks[id].ID, this.tasks[id]);
+                        Vue.set(this.result[this.tasks[id].CREATED_BY], 'taskCount', tasksCount);
+                    }
+
+                    //Vue.set(this.result[this.tasks[id].RESPONSIBLE_ID].tasks, this.tasks[id].ID, this.tasks[id]);
+                    tasksCount++;
+                   // Vue.set(this.result[this.tasks[id].RESPONSIBLE_ID], 'taskCount', tasksCount);
+                }
             }
 
             for (let i in this.result) {
