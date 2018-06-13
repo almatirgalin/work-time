@@ -25,7 +25,8 @@ const app = new Vue({
         this.getOnLoad();
     },
     updated: function () {
-        BX24.fitWindow();
+        let body = document.getElementById('app');
+        BX24.resizeWindow(body.offsetWidth, +body.offsetHeight + 100);
     },
     data: {
         result: {},
