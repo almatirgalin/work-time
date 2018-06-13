@@ -15,8 +15,6 @@ const store = new Vuex.Store({
 
 const app = new Vue({
     el: '#app',
-    // provide the store using the "store" option.
-    // this will inject the store instance to all child components.
     store,
     computed: {
         data () {
@@ -56,8 +54,6 @@ const app = new Vue({
                     for (let user of this.users) {
                         this.usersId.push(user.id);
                     }
-                    //this.isLoading = true;
-                    //this.getTasks();
                 }
             }, 500);
         },
@@ -74,15 +70,19 @@ const app = new Vue({
         },
         getUser: function () {
             BX24.selectUsers((res) => {
-                this.isLoading = true;
-                this.users = [];
-                this.usersId = [];
-                for (let user of res) {
-                    this.usersId.push(user.id);
-                    this.users.push(user);
+                if (res.length) {
+                    this.isLoading = true;
+                    this.users = [];
+                    this.usersId = [];
+                    for (let user of res) {
+                        this.usersId.push(user.id);
+                        this.users.push(user);
+                    }
+                    BX24.userOption.set('users', JSON.stringify(this.users));
+                    this.getTasks();
+                } else {
+                    alert('Сотрудники не выбраны. Выберите, пожалуйста, сотрудников');
                 }
-                BX24.userOption.set('users', JSON.stringify(this.users));
-                this.getTasks();
             })
         },
         getTasks: function () {//Получить все задачи выбранных пользователей
