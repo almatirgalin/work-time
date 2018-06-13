@@ -98,7 +98,7 @@
 <script type="text/javascript" src="js/restCall.js?ver=1"></script>
 <script type="text/javascript" src="js/vuex.js"></script>
 <script type="text/javascript" src="js/vue.js"></script>
-<script type="text/javascript" src="js/application.js?ver=1.3"></script>
+<script type="text/javascript" src="js/application.js?ver=1.4"></script>
 </body>
 </html>
 
