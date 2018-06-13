@@ -74,15 +74,19 @@ const app = new Vue({
         },
         getUser: function () {
             BX24.selectUsers((res) => {
-                this.isLoading = true;
-                this.users = [];
-                this.usersId = [];
-                for (let user of res) {
-                    this.usersId.push(user.id);
-                    this.users.push(user);
+                if (res.length) {
+                    this.isLoading = true;
+                    this.users = [];
+                    this.usersId = [];
+                    for (let user of res) {
+                        this.usersId.push(user.id);
+                        this.users.push(user);
+                    }
+                    BX24.userOption.set('users', JSON.stringify(this.users));
+                    this.getTasks();
+                } else {
+                    alert('Сотрудники не выбраны. Выберите, пожалуйста, сотрудников');
                 }
-                BX24.userOption.set('users', JSON.stringify(this.users));
-                this.getTasks();
             })
         },
         getTasks: function () {//Получить все задачи выбранных пользователей
