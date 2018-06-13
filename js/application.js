@@ -105,12 +105,12 @@ const app = new Vue({
                     let tasksCreated = data.tasksCreated.data;
                     let tasksAuditor = data.tasksAuditor.data;
 
-                    if (tasks.length) {
+                    if (tasks != undefined && tasks.length) {
                         tasks.forEach((item) => {
                             this.tasks[item.ID] = item;
                         });
 
-                        if (tasksCreated.length) {
+                        if (tasksCreated != undefined && tasksCreated.length) {
                             tasksCreated.forEach((item) => {
                                 if (!this.tasks.hasOwnProperty(item.ID)) {
                                     this.tasks[item.ID] = item;
@@ -118,13 +118,14 @@ const app = new Vue({
                             });
                         }
 
-                        if (tasksAuditor.length) {
+                        if (tasksAuditor != undefined && tasksAuditor.length) {
                             tasksAuditor.forEach((item) => {
                                 if (!this.tasks.hasOwnProperty(item.ID)) {
                                     this.tasks[item.ID] = item;
                                 }
                             });
                         }
+
                         this.buildCommandsArray();
                     }
                     //store.commit('setData', data);
