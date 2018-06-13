@@ -56,8 +56,8 @@ const app = new Vue({
                     for (let user of this.users) {
                         this.usersId.push(user.id);
                     }
-                    this.isLoading = true;
-                    this.getTasks();
+                    //this.isLoading = true;
+                    //this.getTasks();
                 }
             }, 500);
         },
@@ -102,6 +102,7 @@ const app = new Vue({
                 (data) => {
                     let tasks = data.tasks.data;
                     let tasksCreated = data.tasksCreated.data;
+                    let tasksAuditor = data.tasksAuditor.data;
 
                     if (tasks.length) {
                         tasks.forEach((item) => {
@@ -110,6 +111,14 @@ const app = new Vue({
 
                         if (tasksCreated.length) {
                             tasksCreated.forEach((item) => {
+                                if (!this.tasks.hasOwnProperty(item.ID)) {
+                                    this.tasks[item.ID] = item;
+                                }
+                            });
+                        }
+
+                        if (tasksAuditor.length) {
+                            tasksAuditor.forEach((item) => {
                                 if (!this.tasks.hasOwnProperty(item.ID)) {
                                     this.tasks[item.ID] = item;
                                 }
@@ -151,6 +160,24 @@ const app = new Vue({
                         order: {'CREATED_DATE': 'asc'},
                         filter: {
                             'CREATED_BY': this.usersId,
+                        },
+                        params : [],
+                        select: [
+                            'TITLE',
+                            'CREATED_DATE',
+                            'DEADLINE',
+                            'STATUS',
+                            'CREATED_BY',
+                            'RESPONSIBLE_ID'
+                        ]
+                    }
+                },
+                'tasksAuditor': {
+                    method: 'task.item.list',
+                    params: {
+                        order: {'CREATED_DATE': 'asc'},
+                        filter: {
+                            'AUDITOR': this.usersId,
                         },
                         params : [],
                         select: [
