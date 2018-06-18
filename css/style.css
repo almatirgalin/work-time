@@ -118,6 +118,80 @@ body {
     margin-top: 20px;
 }
 
+.user-tasks td:first-child, .head-table .head-2{
+    width: 10%;
+}
+
+.user-tasks td:nth-child(2), .head-table .head-3 {
+    width: 15%;
+}
+
+.user-tasks td:nth-child(3), .head-table .head-4{
+    width: 45%;
+}
+
+.user-tasks td:nth-child(4), .head-table .head-5 {
+    width: 15%;
+}
+
+.user-day {
+    border: 2px solid #bcc3c7;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    border-right: 0;
+    margin-bottom: -2px;
+    width: 100px;
+    text-align: center;
+}
+
+.user-days {
+    display: flex;
+}
+
+.list {
+    border: 2px solid #bcc3c7;
+    margin-bottom: -2px;
+}
+
+.all-time {
+    border-top: 2px solid #bcc3c7;
+}
+
+.head-table {
+    border-collapse: collapse;
+    margin-bottom: -2px;
+    display: flex;
+    width: 100%;
+    font-weight: bold;
+}
+
+.head-table .head {
+    display: table-cell;
+    border: 2px solid #bcc3c7;
+    padding: 5px;
+    text-align: center;
+}
+
+.head-table th {
+    border: 2px solid #bcc3c7;
+}
+
+.head-1 {
+    width: 100px;
+    border: 2px solid #bcc3c7;
+    padding: 5px;
+    text-align: center;
+    border-right: 0;
+}
+
+.head-table-dates {
+    display: block;
+    padding: 0;
+    border: 0;
+    width: 80%;
+}
 
 *,
 *::before,

@@ -26,11 +26,11 @@ const app = new Vue({
     },
     updated: function () {
         let body = document.getElementById('app');
-        BX24.resizeWindow(body.offsetWidth, +body.offsetHeight + 100);
+        BX24.resizeWindow(body.offsetWidth, +body.offsetHeight + 150);
     },
     data: {
         result: {},
-        users: [],
+        users: {},
         usersId: [],
         tasks: {},
         taskTimes: [],
@@ -52,8 +52,8 @@ const app = new Vue({
                     this.dateStartString = dateStart;
                     this.dateEndString = dateEnd;
                     this.users = JSON.parse(usersId);
-                    for (let user of this.users) {
-                        this.usersId.push(user.id);
+                    for (let id in this.users) {
+                        this.usersId.push(id);
                     }
                 }
             }, 500);
@@ -73,11 +73,11 @@ const app = new Vue({
             BX24.selectUsers((res) => {
                 if (res.length) {
                     this.isLoading = true;
-                    this.users = [];
+                    this.users = {};
                     this.usersId = [];
                     for (let user of res) {
                         this.usersId.push(user.id);
-                        this.users.push(user);
+                        this.users[user['id']] = user;
                     }
                     BX24.userOption.set('users', JSON.stringify(this.users));
                     this.getTasks();
@@ -256,114 +256,71 @@ const app = new Vue({
             let endDate = new Date(this.dateEndString);
             endDate.setHours(0, 0, 0);
             endDate.setDate(endDate.getDate() + 1);
-
-    	    for (let time of this.taskTimes) {
-    	        let periodSeconds = 0;
-    	        let DATE_START = new Date(time.CREATED_DATE);
-    	        //let DATE_STOP = new Date(time.DATE_STOP);
-
-    	        //if (DATE_START > startDate && DATE_STOP < endDate) {//Внутри периода
-    	        if (DATE_START > startDate && DATE_START < endDate) {//Внутри периода
-    	            //console.log('in period');
-                    periodSeconds = time.SECONDS;
-                } /*else if (DATE_START < startDate && (DATE_STOP < endDate && DATE_STOP > startDate)) {//Дата начала раньше даты начала периода
-                    //console.log('before period');
-                    let timeDiff = Math.abs(startDate.getTime() - DATE_START.getTime());
-                    let diffSeconds = Math.ceil(timeDiff / 1000);
-                    periodSeconds = time.SECONDS - diffSeconds;
-                } else if ((DATE_START > startDate && DATE_START < endDate) && DATE_STOP > endDate) {//Дата конца больше даты конца периода
-                    //console.log('after period');
-                    let timeDiff = Math.abs(DATE_STOP.getTime() - endDate.getTime());
-                    let diffSeconds = Math.ceil(timeDiff / 1000);
-                    periodSeconds = time.SECONDS - diffSeconds;
-                } */
-
-                time.PERIOD_SECONDS = periodSeconds;
-            }
-
+            let workTimes = [];
+            let dayWorkTimes = {};
             let secondsInTask = {};
-            let periodSecondsInTaskAll = {};
-            let periodSecondsInTask = {};
 
             for (let time of this.taskTimes) {
-                periodSecondsInTaskAll[time.TASK_ID] = 0;
-                secondsInTask[time.TASK_ID] = 0;
-            }
-
-            for (let time of this.taskTimes) {
-                periodSecondsInTaskAll[time.TASK_ID] += Number(time.PERIOD_SECONDS);
+                if (!secondsInTask.hasOwnProperty(time.TASK_ID)) {
+                    secondsInTask[time.TASK_ID] = 0;
+                }
                 secondsInTask[time.TASK_ID] += Number(time.SECONDS);
             }
 
-            for (let a in periodSecondsInTaskAll) {
-                if (periodSecondsInTaskAll.hasOwnProperty(a)) {
-                    if (periodSecondsInTaskAll[a]) {
-                        periodSecondsInTask[a] = periodSecondsInTaskAll[a];
+            this.taskTimes.forEach((time, i) => {
+                let dateStart = new Date(time.CREATED_DATE);
+
+                if (!dayWorkTimes.hasOwnProperty(time.USER_ID)) {//Если время затречил сотрудник из списка выбранных
+                    if (~this.usersId.indexOf(time.USER_ID)) {
+                        dayWorkTimes[time.USER_ID] = {};
+                        dayWorkTimes[time.USER_ID].userData = {};
+                        dayWorkTimes[time.USER_ID].userDays = {};
+                        dayWorkTimes[time.USER_ID].sortDays = [];
                     }
                 }
-            }
 
-            let tasks = [];
+                if (~this.usersId.indexOf(time.USER_ID)) {
+                    let user = dayWorkTimes[time.USER_ID].userDays;
+                    dayWorkTimes[time.USER_ID].userData = this.users[time.USER_ID];
 
-            for (let a in this.tasks) {
-                if (this.tasks.hasOwnProperty(a)) {
-                    let taskId = Number(this.tasks[a].ID);
-
-                    if (taskId in periodSecondsInTask) {
-                        //console.log('in task');
-                        let task = this.tasks[a];
-                        task['ALL_SECONDS'] = secondsInTask[taskId];
-                        task['PERIOD_SECONDS'] = periodSecondsInTask[taskId];
-                        tasks.push(task);
-                    }
-                }
-            }
-
-            this.tasks = tasks;
-
-            for (let user of this.users) {
-                Vue.set(this.result, user.id, user);
-                Vue.set(this.result[user.id], 'tasks', {});
-            }
-
-            let tasksCount = 0;
-            for (let id in this.tasks) {
-                if (this.tasks.hasOwnProperty(id)) {
-                    if (~this.usersId.indexOf(this.tasks[id].RESPONSIBLE_ID)) {
-                        Vue.set(this.result[this.tasks[id].RESPONSIBLE_ID].tasks, this.tasks[id].ID, this.tasks[id]);
-                        Vue.set(this.result[this.tasks[id].RESPONSIBLE_ID], 'taskCount', tasksCount);
-                    } else if (~this.usersId.indexOf(this.tasks[id].CREATED_BY)) {
-                        Vue.set(this.result[this.tasks[id].CREATED_BY].tasks, this.tasks[id].ID, this.tasks[id]);
-                        Vue.set(this.result[this.tasks[id].CREATED_BY], 'taskCount', tasksCount);
-                    }
-
-                    //Vue.set(this.result[this.tasks[id].RESPONSIBLE_ID].tasks, this.tasks[id].ID, this.tasks[id]);
-                    tasksCount++;
-                   // Vue.set(this.result[this.tasks[id].RESPONSIBLE_ID], 'taskCount', tasksCount);
-                }
-            }
-
-            for (let i in this.result) {
-                if (this.result.hasOwnProperty(i)) {
-                    let user = this.result[i];
-                    let allSecs = 0;
-                    let periodSecs = 0;
-                    for (let a in user.tasks) {
-                        if (user.tasks.hasOwnProperty(a)) {
-                            let task = user.tasks[a];
-                            allSecs += task.ALL_SECONDS;
-                            periodSecs += task.PERIOD_SECONDS;
+                    if (dateStart > startDate && dateStart < endDate) {//Внутри периода
+                        let day = time.CREATED_DATE.substr(0, 10);
+                        if (!~dayWorkTimes[time.USER_ID].sortDays.indexOf(day)) {
+                            dayWorkTimes[time.USER_ID].sortDays.push(day);
                         }
+
+                        if (!user.hasOwnProperty(day)) {
+                            user[day] = {};
+                            user[day].tasks = {};
+                            user[day].periodTasksTime = 0;
+                            //user[day].allTasksTime = 0;
+                        }
+
+                        let dayTimes = user[day].tasks;
+                        if (!dayTimes.hasOwnProperty(time.TASK_ID)) {
+                            dayTimes[time.TASK_ID] = {};
+                            dayTimes[time.TASK_ID].periodTime = 0;
+                            dayTimes[time.TASK_ID].allTime = 0;
+                            dayTimes[time.TASK_ID].title = this.tasks[time.TASK_ID].TITLE;
+                            dayTimes[time.TASK_ID].date = this.tasks[time.TASK_ID].CREATED_DATE;
+                        }
+
+                        user[day].periodTasksTime += Number(time.SECONDS);
+                        //user[day].allTasksTime += Number(secondsInTask[time.TASK_ID]);
+                        dayTimes[time.TASK_ID].periodTime += Number(time.SECONDS);
+                        dayTimes[time.TASK_ID].allTime = secondsInTask[time.TASK_ID];
+
+                        time.PERIOD_SECONDS = time.SECONDS;
                     }
-                    user.TASK_SECONDS = allSecs;
-                    user.TASK_PERIOD_SECONDS = periodSecs;
+                }
+            });
+
+            this.result = dayWorkTimes;
+            for (let userId in this.result) {
+                if (this.result.hasOwnProperty(userId)) {
+                    this.result[userId].sortDays.sort();
                 }
             }
-
-            /*for (let time of this.taskTimes) {
-                Vue.set(this.result[time.USER_ID].tasks[time.TASK_ID]['times'], time.ID, time);
-            }*/
-            console.log('result');
             console.log(this.result);
             this.isLoading = false;
         },
