@@ -1,0 +1,11 @@
+{
+  "name": "work-time",
+  "version": "0.0.1",
+  "dependencies": {
+    
+  },
+  "scripts": {
+    "build": "webpack",
+    "start": "webpack --watch"
+  }
+}
