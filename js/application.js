@@ -276,6 +276,7 @@ const app = new Vue({
                         dayWorkTimes[time.USER_ID].userData = {};
                         dayWorkTimes[time.USER_ID].userDays = {};
                         dayWorkTimes[time.USER_ID].sortDays = [];
+                        dayWorkTimes[time.USER_ID].allTime = 0;
                     }
                 }
 
@@ -292,6 +293,7 @@ const app = new Vue({
                         if (!user.hasOwnProperty(day)) {
                             user[day] = {};
                             user[day].tasks = {};
+                            user[day].tasksCount = 0;
                             user[day].periodTasksTime = 0;
                             //user[day].allTasksTime = 0;
                         }
@@ -305,6 +307,7 @@ const app = new Vue({
                             dayTimes[time.TASK_ID].date = this.tasks[time.TASK_ID].CREATED_DATE;
                         }
 
+                        dayWorkTimes[time.USER_ID].allTime += Number(time.SECONDS);
                         user[day].periodTasksTime += Number(time.SECONDS);
                         //user[day].allTasksTime += Number(secondsInTask[time.TASK_ID]);
                         dayTimes[time.TASK_ID].periodTime += Number(time.SECONDS);
@@ -319,6 +322,17 @@ const app = new Vue({
             for (let userId in this.result) {
                 if (this.result.hasOwnProperty(userId)) {
                     this.result[userId].sortDays.sort();
+                    for (let dayId in this.result[userId].userDays) {
+                        if (this.result[userId].userDays.hasOwnProperty(dayId)) {
+                            let day = this.result[userId].userDays[dayId];
+                            let taskCount = 0;
+                            for (let i in day.tasks) {
+                                taskCount++;
+                            }
+                            taskCount++;
+                            this.result[userId].userDays[dayId].tasksCount = taskCount;
+                        }
+                    }
                 }
             }
             console.log(this.result);

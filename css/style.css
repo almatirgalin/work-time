@@ -82,7 +82,7 @@ body {
 
 .list {
     font-size: 13px;
-    width: 80%;
+    /*width: 800px;*/
     border-collapse: collapse;
 }
 
@@ -119,19 +119,19 @@ body {
 }
 
 .user-tasks td:first-child, .head-table .head-2{
-    width: 10%;
+    width: 150px;
 }
 
-.user-tasks td:nth-child(2), .head-table .head-3 {
-    width: 15%;
+.user-tasks td:nth-child(2), .head-table .head-4{
+    width: 400px;
 }
 
-.user-tasks td:nth-child(3), .head-table .head-4{
-    width: 45%;
+.user-tasks td:nth-child(3), .head-table .head-5 {
+    width: 150px;
 }
 
-.user-tasks td:nth-child(4), .head-table .head-5 {
-    width: 15%;
+.user-tasks td:nth-child(4), .head-table .head-6 {
+    width: 150px;
 }
 
 .user-day {
@@ -161,7 +161,6 @@ body {
 
 .head-table {
     border-collapse: collapse;
-    margin-bottom: -2px;
     display: flex;
     width: 100%;
     font-weight: bold;
@@ -184,13 +183,45 @@ body {
     padding: 5px;
     text-align: center;
     border-right: 0;
+    border-bottom: 0;
 }
 
 .head-table-dates {
-    display: block;
+    display: table;
     padding: 0;
     border: 0;
-    width: 80%;
+   /* width: 800px;*/
+}
+
+.table-footer div {
+    border: 2px solid #bcc3c7;
+    display: table-cell;
+    font-weight: bold;
+}
+
+.table-footer {
+    display: table;
+}
+
+.footer-text {
+    width: 650px;
+    text-align: right;
+    padding: 0 5px;
+    border-right: 1px;
+}
+
+.footer-time {
+    width: 300px;
+    text-align: left;
+    padding: 0 50px;
+}
+
+.day-time-tr {
+    font-weight: bold;
+}
+
+.day-time {
+    width: 100px;
 }
 
 *,

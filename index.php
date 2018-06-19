@@ -53,25 +53,18 @@
                     </a>
                 </div>
             </div>
-            <div class="head-table">
-                <div class="head-1">Дата</div>
-                <div class="head-table-dates">
-                    <div class="head head-2">ID задачи</div>
-                    <div class="head head-3">Дата создания</div>
-                    <div class="head head-4">Название</div>
-                    <div class="head head-5">Время за период</div>
-                    <div class="head head-6">Время общее</div>
-                </div>
-            </div>
             <div class="user-days" v-for="(dayId) in user.sortDays">
-                <div class="user-day">
-                    {{formatDate(dayId)}}
-                </div>
                 <table class="list">
                     <tbody class="table-body">
+                    <tr class="day-time-tr">
+                        <td class="day-time" v-bind:rowspan="user.userDays[dayId].tasksCount">{{formatDate(dayId)}}</td>
+                        <td>ИД задачи</td>
+                        <td>Название</td>
+                        <td>Время за период</td>
+                        <td>Время общее</td>
+                    </tr>
                     <tr v-for="(task, index) in user.userDays[dayId].tasks" class="user-tasks">
                         <td><a v-bind:href="'https://nir-vanna.bitrix24.ru/company/personal/user/' + userId + '/tasks/task/view/' + index + '/'">{{index}}</a></td>
-                        <td>{{formatDate(task.date)}}</td>
                         <td class="left-align">{{task.title}}</td>
                         <td>{{secondsToHours(task.periodTime)}}</td>
                         <td>{{secondsToHours(task.allTime)}}</td>
@@ -83,6 +76,10 @@
                     </tr>
                     </tbody>
                 </table>
+            </div>
+            <div class="table-footer">
+                <div class="footer-text">Итого за период</div>
+                <div class="footer-time">{{secondsToHours(user.allTime)}}</div>
             </div>
             <!--<div class="no-items" v-else>
                 Не найдено задач с затреченным временем за этот период
@@ -104,7 +101,7 @@
 <script type="text/javascript" src="js/restCall.js?ver=1"></script>
 <script type="text/javascript" src="js/vuex.js"></script>
 <script type="text/javascript" src="js/vue.min.js"></script>
-<script type="text/javascript" src="js/application.js?ver=1.7"></script>
+<script type="text/javascript" src="js/application.js?ver=1.8"></script>
 </body>
 </html>
 
