@@ -1,24 +1,27 @@
-const store = new Vuex.Store({
+/*const store = new Vuex.Store({
     state: {
         data: {},
 		period: {}
     },
     mutations: {
         setData(state, data){
-            /*for (let id in users) {
+            /!*for (let id in users) {
                 Vue.set( state.users, id, users[id])
-            }*/
+            }*!/
             state.data = data;
         }
     }
-});
+});*/
 
 const app = new Vue({
     el: '#app',
-    store,
     computed: {
-        data () {
-            return this.$store.state.data
+        countResult () {
+            let count = 0;
+            for (let a in this.result) {
+                count++;
+            }
+            return count;
         }
     },
     mounted: function () {
@@ -327,9 +330,11 @@ const app = new Vue({
                             let day = this.result[userId].userDays[dayId];
                             let taskCount = 0;
                             for (let i in day.tasks) {
+                                if (day.tasks.hasOwnProperty(i)) {
+                                    day.tasks[i].row = taskCount;
+                                }
                                 taskCount++;
                             }
-                            taskCount++;
                             this.result[userId].userDays[dayId].tasksCount = taskCount;
                         }
                     }
