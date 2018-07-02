@@ -112,7 +112,7 @@
 <script type="text/javascript" src="js/restCall.js?ver=1"></script>
 <!--<script type="text/javascript" src="js/vuex.js"></script>-->
 <script type="text/javascript" src="js/vue.min.js"></script>
-<script type="text/javascript" src="js/application.js?ver=1.10"></script>
+<script type="text/javascript" src="js/application.js?ver=1.11"></script>
 </body>
 </html>
 

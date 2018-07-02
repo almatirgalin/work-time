@@ -273,50 +273,52 @@ const app = new Vue({
             this.taskTimes.forEach((time, i) => {
                 let dateStart = new Date(time.CREATED_DATE);
 
-                if (!dayWorkTimes.hasOwnProperty(time.USER_ID)) {//Если время затречил сотрудник из списка выбранных
-                    if (~this.usersId.indexOf(time.USER_ID)) {
-                        dayWorkTimes[time.USER_ID] = {};
-                        dayWorkTimes[time.USER_ID].userData = {};
-                        dayWorkTimes[time.USER_ID].userDays = {};
-                        dayWorkTimes[time.USER_ID].sortDays = [];
-                        dayWorkTimes[time.USER_ID].allTime = 0;
+                if (time.SOURCE == 3) {
+                    if (!dayWorkTimes.hasOwnProperty(time.USER_ID)) {//Если время затречил сотрудник из списка выбранных
+                        if (~this.usersId.indexOf(time.USER_ID)) {
+                            dayWorkTimes[time.USER_ID] = {};
+                            dayWorkTimes[time.USER_ID].userData = {};
+                            dayWorkTimes[time.USER_ID].userDays = {};
+                            dayWorkTimes[time.USER_ID].sortDays = [];
+                            dayWorkTimes[time.USER_ID].allTime = 0;
+                        }
                     }
-                }
 
-                if (~this.usersId.indexOf(time.USER_ID)) {
-                    let user = dayWorkTimes[time.USER_ID].userDays;
-                    dayWorkTimes[time.USER_ID].userData = this.users[time.USER_ID];
+                    if (~this.usersId.indexOf(time.USER_ID)) {
+                        let user = dayWorkTimes[time.USER_ID].userDays;
+                        dayWorkTimes[time.USER_ID].userData = this.users[time.USER_ID];
 
-                    if (dateStart > startDate && dateStart < endDate) {//Внутри периода
-                        let day = time.CREATED_DATE.substr(0, 10);
-                        if (!~dayWorkTimes[time.USER_ID].sortDays.indexOf(day)) {
-                            dayWorkTimes[time.USER_ID].sortDays.push(day);
+                        if (dateStart > startDate && dateStart < endDate) {//Внутри периода
+                            let day = time.CREATED_DATE.substr(0, 10);
+                            if (!~dayWorkTimes[time.USER_ID].sortDays.indexOf(day)) {
+                                dayWorkTimes[time.USER_ID].sortDays.push(day);
+                            }
+
+                            if (!user.hasOwnProperty(day)) {
+                                user[day] = {};
+                                user[day].tasks = {};
+                                user[day].tasksCount = 0;
+                                user[day].periodTasksTime = 0;
+                                //user[day].allTasksTime = 0;
+                            }
+
+                            let dayTimes = user[day].tasks;
+                            if (!dayTimes.hasOwnProperty(time.TASK_ID)) {
+                                dayTimes[time.TASK_ID] = {};
+                                dayTimes[time.TASK_ID].periodTime = 0;
+                                dayTimes[time.TASK_ID].allTime = 0;
+                                dayTimes[time.TASK_ID].title = this.tasks[time.TASK_ID].TITLE;
+                                dayTimes[time.TASK_ID].date = this.tasks[time.TASK_ID].CREATED_DATE;
+                            }
+
+                            dayWorkTimes[time.USER_ID].allTime += Number(time.SECONDS);
+                            user[day].periodTasksTime += Number(time.SECONDS);
+                            //user[day].allTasksTime += Number(secondsInTask[time.TASK_ID]);
+                            dayTimes[time.TASK_ID].periodTime += Number(time.SECONDS);
+                            dayTimes[time.TASK_ID].allTime = secondsInTask[time.TASK_ID];
+
+                            time.PERIOD_SECONDS = time.SECONDS;
                         }
-
-                        if (!user.hasOwnProperty(day)) {
-                            user[day] = {};
-                            user[day].tasks = {};
-                            user[day].tasksCount = 0;
-                            user[day].periodTasksTime = 0;
-                            //user[day].allTasksTime = 0;
-                        }
-
-                        let dayTimes = user[day].tasks;
-                        if (!dayTimes.hasOwnProperty(time.TASK_ID)) {
-                            dayTimes[time.TASK_ID] = {};
-                            dayTimes[time.TASK_ID].periodTime = 0;
-                            dayTimes[time.TASK_ID].allTime = 0;
-                            dayTimes[time.TASK_ID].title = this.tasks[time.TASK_ID].TITLE;
-                            dayTimes[time.TASK_ID].date = this.tasks[time.TASK_ID].CREATED_DATE;
-                        }
-
-                        dayWorkTimes[time.USER_ID].allTime += Number(time.SECONDS);
-                        user[day].periodTasksTime += Number(time.SECONDS);
-                        //user[day].allTasksTime += Number(secondsInTask[time.TASK_ID]);
-                        dayTimes[time.TASK_ID].periodTime += Number(time.SECONDS);
-                        dayTimes[time.TASK_ID].allTime = secondsInTask[time.TASK_ID];
-
-                        time.PERIOD_SECONDS = time.SECONDS;
                     }
                 }
             });
